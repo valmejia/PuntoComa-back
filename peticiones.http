@@ -1,0 +1,9 @@
+### Probar Registro de Usuario
+POST http://localhost:8080/api/usuarios/registro
+Content-Type: application/json
+
+{
+  "nombre": "Valeria Mejia",
+  "email": "valeria@test.com",
+  "password": "miPassword123"
+}
