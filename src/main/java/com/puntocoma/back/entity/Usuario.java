@@ -2,6 +2,8 @@ package com.puntocoma.back.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -10,19 +12,32 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String nombre;
 
     @Column(nullable = false, unique = true)
     private String email;
 
+    /** Hash BCrypt de la contraseña (nunca texto plano). */
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String rol; // "USUARIO" o "VENDEDOR"
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Rol rol = Rol.USUARIO;
 
-    // Getters y Setters (puedes generarlos con Alt + Insert en IntelliJ)
+    /** Una cuenta inactiva (bloqueada) no puede iniciar sesión. */
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean activo = true;
+
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
+
+    @PrePersist
+    void prePersist() {
+        if (fechaRegistro == null) fechaRegistro = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }
@@ -31,6 +46,10 @@ public class Usuario {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public String getRol() { return rol; }
-    public void setRol(String rol) { this.rol = rol; }
+    public Rol getRol() { return rol; }
+    public void setRol(Rol rol) { this.rol = rol; }
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
+    public LocalDateTime getFechaRegistro() { return fechaRegistro; }
+    public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
 }

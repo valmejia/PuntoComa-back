@@ -1,19 +1,12 @@
 package com.puntocoma.back.dto;
 
-public class UsuarioResponse {
-    private Long id;
-    private String nombre;
-    private String email;
-    private String rol;
+import com.puntocoma.back.entity.Rol;
+import com.puntocoma.back.entity.Usuario;
 
-    // Constructor
-    public UsuarioResponse(Long id, String nombre, String email, String rol) {
-        this.id = id; this.nombre = nombre; this.email = email; this.rol = rol;
+import java.time.LocalDateTime;
+
+public record UsuarioResponse(Long id, String nombre, String email, Rol rol, boolean activo, LocalDateTime fechaRegistro) {
+    public static UsuarioResponse de(Usuario u) {
+        return new UsuarioResponse(u.getId(), u.getNombre(), u.getEmail(), u.getRol(), u.isActivo(), u.getFechaRegistro());
     }
-
-    // Getters
-    public Long getId() { return id; }
-    public String getNombre() { return nombre; }
-    public String getEmail() { return email; }
-    public String getRol() { return rol; }
 }
