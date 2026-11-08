@@ -1,5 +1,14 @@
-### Probar Registro de Usuario
-POST http://localhost:8080/api/usuarios/registro
+### Variables
+@host = http://localhost:8080
+@token = pega-aqui-el-token-del-login
+
+### Salud (público)
+GET {{host}}/api/salud
+
+### ===================== SPRINT 1 =====================
+
+### HU-01 Registro de usuario (rol USUARIO por defecto)
+POST {{host}}/api/auth/registro
 Content-Type: application/json
 
 {
@@ -7,3 +16,118 @@ Content-Type: application/json
   "email": "valeria@test.com",
   "password": "miPassword123"
 }
+
+### HU-02 Login -> devuelve token JWT y el rol
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "valeria@test.com",
+  "password": "miPassword123"
+}
+
+### Login como administrador inicial
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@puntocoma.com",
+  "password": "Admin12345"
+}
+
+### Perfil del usuario autenticado
+GET {{host}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### HU-03 Catálogo con filtros (todos opcionales)
+GET {{host}}/api/libros?q=soledad&genero=Novela&formato=FISICO&tipo=PRESTAMO&disponible=true
+Authorization: Bearer {{token}}
+
+### Géneros disponibles para el filtro
+GET {{host}}/api/libros/generos
+Authorization: Bearer {{token}}
+
+### Detalle de un libro
+GET {{host}}/api/libros/1
+Authorization: Bearer {{token}}
+
+### (ADMIN) Listar usuarios
+GET {{host}}/api/admin/usuarios
+Authorization: Bearer {{token}}
+
+### (ADMIN) Cambiar rol: USUARIO | VENDEDOR | ADMIN
+PUT {{host}}/api/admin/usuarios/2/rol
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "rol": "VENDEDOR" }
+
+### (ADMIN) Bloquear / desbloquear cuenta
+PUT {{host}}/api/admin/usuarios/2/estado
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "activo": false }
+
+### ===================== SPRINT 2 =====================
+
+### HU-04 Publicar libro (tipo: VENTA | PRESTAMO | AMBOS, formato: FISICO | DIGITAL)
+POST {{host}}/api/libros
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "titulo": "Rayuela",
+  "autor": "Julio Cortázar",
+  "genero": "Novela",
+  "descripcion": "Edición de bolsillo en buen estado",
+  "formato": "FISICO",
+  "tipo": "AMBOS",
+  "precio": 250.00,
+  "stock": 1
+}
+
+### Mis libros publicados
+GET {{host}}/api/libros/mios
+Authorization: Bearer {{token}}
+
+### Editar libro (dueño, vendedor o admin)
+PUT {{host}}/api/libros/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "titulo": "Rayuela (2a ed.)",
+  "autor": "Julio Cortázar",
+  "genero": "Novela",
+  "formato": "FISICO",
+  "tipo": "PRESTAMO",
+  "stock": 2
+}
+
+### Eliminar libro (borrado lógico; no si tiene préstamos activos)
+DELETE {{host}}/api/libros/1
+Authorization: Bearer {{token}}
+
+### HU-05 Solicitar préstamo (dias opcional, 1-30, por defecto 14)
+POST {{host}}/api/prestamos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "libroId": 2, "dias": 7 }
+
+### Mis préstamos (como lector)
+GET {{host}}/api/prestamos/mios
+Authorization: Bearer {{token}}
+
+### Préstamos de los libros que yo publiqué
+GET {{host}}/api/prestamos/recibidos
+Authorization: Bearer {{token}}
+
+### (VENDEDOR/ADMIN) Todos los préstamos, filtro opcional estado=ACTIVO|DEVUELTO
+GET {{host}}/api/prestamos?estado=ACTIVO
+Authorization: Bearer {{token}}
+
+### HU-14 Registrar devolución (lector, dueño del libro, vendedor o admin)
+PUT {{host}}/api/prestamos/1/devolucion
+Authorization: Bearer {{token}}
