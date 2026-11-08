@@ -25,6 +25,13 @@ public interface LibroRepository extends JpaRepository<Libro, Long>, JpaSpecific
     @Query("select distinct l.autor from Libro l where l.activo = true order by l.autor")
     List<String> findAutoresActivos();
 
+    long countByActivoTrue();
+
+    @Query("select count(distinct l.autor) from Libro l where l.activo = true")
+    long countAutoresActivos();
+
+    List<Libro> findTop3ByActivoTrueOrderByFechaPublicacionDescIdDesc();
+
     /** Bloquea la fila para evitar que dos préstamos simultáneos dejen stock negativo. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select l from Libro l where l.id = :id and l.activo = true")

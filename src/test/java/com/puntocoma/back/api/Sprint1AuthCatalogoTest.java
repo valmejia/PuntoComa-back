@@ -103,6 +103,28 @@ class Sprint1AuthCatalogoTest extends ApiTestSupport {
     }
 
     @Test
+    void portadaEsPublicaYDevuelveDestacados() throws Exception {
+        String t = nuevoUsuario();
+        publicar(t, libroJson("Destacado", "Autor D", "Novela", "FISICO", "PRESTAMO", null, 1));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/publico/portada"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulos", greaterThan(0)))
+                .andExpect(jsonPath("$.lectores", greaterThan(0)))
+                .andExpect(jsonPath("$.destacados", hasSize(lessThanOrEqualTo(3))))
+                .andExpect(jsonPath("$.destacados[0].titulo").exists());
+    }
+
+    @Test
+    void busquedaIncluyeIsbn() throws Exception {
+        String t = nuevoUsuario();
+        String isbn = "978" + (System.nanoTime() % 1_000_000_000L);
+        postJson("/api/libros", t, """
+                {"titulo":"Con ISBN","autor":"A","genero":"G","formato":"FISICO","tipo":"PRESTAMO","stock":1,"isbn":"%s"}
+                """.formatted(isbn)).andExpect(status().isCreated());
+        get("/api/libros?q=" + isbn, t).andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].isbn").value(isbn));
+    }
+
+    @Test
     void catalogoFiltraPorTituloAutorGeneroFormatoYTipo() throws Exception {
         String t = nuevoUsuario();
         String sufijo = Long.toString(System.nanoTime());

@@ -5,6 +5,9 @@
 ### Salud (público)
 GET {{host}}/api/salud
 
+### Portada de bienvenida (público): contadores y 3 libros destacados
+GET {{host}}/api/publico/portada
+
 ### ===================== SPRINT 1 =====================
 
 ### HU-01 Registro de usuario (rol USUARIO por defecto)
@@ -39,7 +42,7 @@ Content-Type: application/json
 GET {{host}}/api/auth/me
 Authorization: Bearer {{token}}
 
-### HU-03 Catálogo con filtros (todos opcionales)
+### HU-03 Catálogo con filtros (todos opcionales; q busca en título, autor o ISBN)
 GET {{host}}/api/libros?q=soledad&genero=Novela&formato=FISICO&tipo=PRESTAMO&disponible=true
 Authorization: Bearer {{token}}
 

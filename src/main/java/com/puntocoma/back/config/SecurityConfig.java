@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registro", "/api/auth/login",
                                 "/api/usuarios/registro").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/salud", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/salud", "/api/publico/**", "/error").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e

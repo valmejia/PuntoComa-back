@@ -2,6 +2,7 @@ package com.puntocoma.back.service;
 
 import com.puntocoma.back.dto.LibroRequest;
 import com.puntocoma.back.dto.LibroResponse;
+import com.puntocoma.back.dto.PortadaResponse;
 import com.puntocoma.back.entity.*;
 import com.puntocoma.back.exception.ApiException;
 import com.puntocoma.back.repository.LibroRepository;
@@ -35,11 +36,19 @@ public class LibroService {
         this.prestamoRepository = prestamoRepository;
     }
 
+    /** Datos públicos de la pantalla de bienvenida. */
+    @Transactional(readOnly = true)
+    public PortadaResponse portada() {
+        return new PortadaResponse(libroRepository.countByActivoTrue(), libroRepository.countAutoresActivos(),
+                usuarioRepository.countByActivoTrue(),
+                libroRepository.findTop3ByActivoTrueOrderByFechaPublicacionDescIdDesc().stream().map(LibroResponse::de).toList());
+    }
+
     /** Filtros del catálogo (HU-03). Todos son opcionales. */
     public record FiltroCatalogo(String q, String autor, String genero, FormatoLibro formato,
                                  TipoPublicacion tipo, Boolean disponible) {}
 
-    /** HU-03 / CU-03: búsqueda por título y filtros por autor, género, formato, tipo y disponibilidad. */
+    /** HU-03 / CU-03: búsqueda por título, autor o ISBN y filtros por autor, género, formato, tipo y disponibilidad. */
     @Transactional(readOnly = true)
     public List<LibroResponse> buscar(FiltroCatalogo f) {
         Specification<Libro> spec = (root, query, cb) -> {
@@ -47,7 +56,8 @@ public class LibroService {
             p.add(cb.isTrue(root.get("activo")));
             if (StringUtils.hasText(f.q())) {
                 String like = "%" + f.q().trim().toLowerCase(Locale.ROOT) + "%";
-                p.add(cb.or(cb.like(cb.lower(root.get("titulo")), like), cb.like(cb.lower(root.get("autor")), like)));
+                p.add(cb.or(cb.like(cb.lower(root.get("titulo")), like), cb.like(cb.lower(root.get("autor")), like),
+                        cb.like(cb.lower(root.get("isbn")), like)));
             }
             if (StringUtils.hasText(f.autor())) {
                 p.add(cb.like(cb.lower(root.get("autor")), "%" + f.autor().trim().toLowerCase(Locale.ROOT) + "%"));

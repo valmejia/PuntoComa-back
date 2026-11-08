@@ -27,8 +27,9 @@ Los errores siempre responden `{ status, error, mensaje, errores }`.
 | POST | `/api/auth/registro` | Registro (rol USUARIO) | 1 |
 | POST | `/api/auth/login` | Login → `{ token, usuario }` | 1 |
 | GET | `/api/auth/me` | Perfil actual | 1 |
-| GET | `/api/libros` | Catálogo: `q, autor, genero, formato, tipo, disponible` | 1 |
+| GET | `/api/libros` | Catálogo: `q` (título, autor o ISBN), `autor, genero, formato, tipo, disponible` | 1 |
 | GET | `/api/libros/{id}` · `/generos` · `/autores` | Detalle y valores para filtros | 1 |
+| GET | `/api/publico/portada` | Contadores y destacados para la bienvenida (público) | 1 |
 | GET/PUT | `/api/admin/usuarios`, `/{id}/rol`, `/{id}/estado` | Gestión de roles y bloqueo (ADMIN) | 1 |
 | POST | `/api/libros` | Publicar libro (venta / préstamo / ambos) | 2 |
 | GET | `/api/libros/mios` | Mis publicaciones | 2 |
